@@ -13,6 +13,7 @@ import qualified Real.PkgAesonGeneric as PkgAesonGeneric
 import qualified Real.PkgAesonTH as PkgAesonTH
 --import qualified Real.PkgMsgpack as PkgMsgpack
 import qualified Real.CBOR as CBOR
+import qualified Real.Packman as Packman
 
 import qualified Tree.MemSize
 import           Tree.DeepSeq ()
@@ -25,6 +26,7 @@ import qualified Tree.PkgAesonGeneric as Micro.PkgAesonGeneric
 import qualified Tree.PkgAesonTH as Micro.PkgAesonTH
 --import qualified Real.PkgMsgpack as PkgMsgpack
 import qualified Tree.CBOR as Micro.CBOR
+import qualified Tree.Packman as Micro.Packman
 
 import Criterion.Main
 
@@ -127,13 +129,14 @@ macrobenchmarks =
   , env readBigTestData $ \tstdata ->
     bgroup "encoding"
       [ bench "binary"        (whnf perfEncodeBinary       tstdata)
-      , bench "cereal"        (whnf perfEncodeCereal       tstdata)
-      , bench "aeson generic" (whnf perfEncodeAesonGeneric tstdata)
-      , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
+--      , bench "cereal"        (whnf perfEncodeCereal       tstdata)
+--      , bench "aeson generic" (whnf perfEncodeAesonGeneric tstdata)
+--      , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
       , bench "read/show"     (whnf perfEncodeReadShow     tstdata)
 --      , bench "msgpack lib"   (whnf perfEncodeMsgpack      tstdata)
 --      , bench "new msgpack"   (whnf perfEncodeNewMsgPack   tstdata)
-      , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
+--      , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
+      , bench "packman"       (whnf perfEncodePackman      tstdata)
       ]
 
   , env readBigTestData $ \tstdata ->
@@ -141,14 +144,14 @@ macrobenchmarks =
       [ env (return $ PkgBinary.serialise tstdata) $ \tstdataB ->
         bench "binary"        (whnf perfDecodeBinary       tstdataB)
 
-      , env (return $ PkgCereal.serialise tstdata) $ \tstdataC ->
-        bench "cereal"        (whnf perfDecodeCereal       tstdataC)
+      -- , env (return $ PkgCereal.serialise tstdata) $ \tstdataC ->
+      --   bench "cereal"        (whnf perfDecodeCereal       tstdataC)
 
-      , env (return $ PkgAesonTH.serialise tstdata) $ \tstdataA ->
-        bgroup "aeson"
-          [ bench "generic"   (whnf perfDecodeAesonGeneric tstdataA)
-          , bench "TH"        (whnf perfDecodeAesonTH      tstdataA)
-          ]
+      -- , env (return $ PkgAesonTH.serialise tstdata) $ \tstdataA ->
+      --   bgroup "aeson"
+      --     [ bench "generic"   (whnf perfDecodeAesonGeneric tstdataA)
+      --     , bench "TH"        (whnf perfDecodeAesonTH      tstdataA)
+      --     ]
 
       , env (return $ ReadShow.serialise tstdata) $ \tstdataS ->
         bench "read/show"     (whnf perfDecodeReadShow     tstdataS)
@@ -158,8 +161,11 @@ macrobenchmarks =
 --      , env (return $ NewMsgpack.serialise tstdata) $ \tstdataN ->
 --        bench "new msgpack"   (whnf perfDecodeNewMsgPack   tstdataN)
 
-      , env (return $ CBOR.serialise tstdata) $ \tstdataR ->
-        bench "cbor"   (whnf perfDecodeCBOR                tstdataR)
+      -- , env (return $ CBOR.serialise tstdata) $ \tstdataR ->
+      --   bench "cbor"   (whnf perfDecodeCBOR                tstdataR)
+
+      , env (return $ Packman.serialise tstdata) $ \tstdataR ->
+        bench "packman"   (whnf perfDecodePackman                tstdataR)
       ]
 
   , env readBigTestData $ \tstdata ->
@@ -167,14 +173,14 @@ macrobenchmarks =
       [ env (return $ PkgBinary.serialise tstdata) $ \tstdataB ->
         bench "binary"        (nf perfDecodeBinary       tstdataB)
 
-      , env (return $ PkgCereal.serialise tstdata) $ \tstdataC ->
-        bench "cereal"        (nf perfDecodeCereal       tstdataC)
+      -- , env (return $ PkgCereal.serialise tstdata) $ \tstdataC ->
+      --   bench "cereal"        (nf perfDecodeCereal       tstdataC)
 
-      , env (return $ PkgAesonTH.serialise tstdata) $ \tstdataA ->
-        bgroup "aeson"
-          [ bench "generic"   (nf perfDecodeAesonGeneric tstdataA)
-          , bench "TH"        (nf perfDecodeAesonTH      tstdataA)
-          ]
+      -- , env (return $ PkgAesonTH.serialise tstdata) $ \tstdataA ->
+      --   bgroup "aeson"
+      --     [ bench "generic"   (nf perfDecodeAesonGeneric tstdataA)
+      --     , bench "TH"        (nf perfDecodeAesonTH      tstdataA)
+      --     ]
 
       , env (return $ ReadShow.serialise tstdata) $ \tstdataS ->
         bench "read/show"     (nf perfDecodeReadShow     tstdataS)
@@ -184,14 +190,17 @@ macrobenchmarks =
 --      , env (return $ NewMsgpack.serialise tstdata) $ \tstdataN ->
 --        bench "new msgpack"   (nf perfDecodeNewMsgPack   tstdataN)
 
-      , env (return $ CBOR.serialise tstdata) $ \tstdataR ->
-        bench "cbor"          (nf perfDecodeCBOR         tstdataR)
+      -- , env (return $ CBOR.serialise tstdata) $ \tstdataR ->
+      --   bench "cbor"          (nf perfDecodeCBOR         tstdataR)
+
+      , env (return $ Packman.serialise tstdata) $ \tstdataR ->
+        bench "packman"          (nf perfDecodePackman         tstdataR)
       ]
   ]
   where
     perfEncodeBinary, perfEncodeCereal, perfEncodeAesonGeneric,
       perfEncodeAesonTH, perfEncodeReadShow,
-      perfEncodeCBOR
+      perfEncodeCBOR, perfEncodePackman
       :: [Types.GenericPackageDescription] -> Int64
 
 
@@ -203,10 +212,11 @@ macrobenchmarks =
     --perfEncodeMsgpack      = BS.length . PkgMsgpack.serialise
     --perfEncodeNewMsgPack   = BS.length . NewMsgpack.serialise
     perfEncodeCBOR         = BS.length . CBOR.serialise
+    perfEncodePackman      = BS.length . Packman.serialise
 
     perfDecodeBinary, perfDecodeCereal, perfDecodeAesonGeneric,
       perfDecodeAesonTH, perfDecodeReadShow,
-      perfDecodeCBOR
+      perfDecodeCBOR, perfDecodePackman
       :: BS.ByteString -> [Types.GenericPackageDescription]
 
 
@@ -218,6 +228,7 @@ macrobenchmarks =
     --perfDecodeMsgpack      = PkgMsgpack.deserialise
     --perfDecodeNewMsgPack   = NewMsgpack.deserialise
     perfDecodeCBOR        = CBOR.deserialise
+    perfDecodePackman     = Packman.deserialise
 
 microbenchmarks :: IO ()
 microbenchmarks = do
@@ -230,6 +241,7 @@ microbenchmarks = do
 --        tstdataM = PkgMsgpack.serialise tstdata
 --        tstdataN = Micro.NewMsgpack.serialise tstdata
         tstdataR = Micro.CBOR.serialise tstdata
+        tstdataP = Micro.Packman.serialise tstdata
     defaultMain
       [ bgroup "reference"
           [ bench "deepseq" (whnf rnf tstdata)
@@ -237,35 +249,38 @@ microbenchmarks = do
           ]
       , bgroup "encoding" $ deepseq tstdata
           [ bench "binary"        (whnf perfEncodeBinary       tstdata)
-          , bench "cereal"        (whnf perfEncodeCereal       tstdata)
-          , bench "aeson generic" (whnf perfEncodeAesonGeneric tstdata)
-          , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
+          -- , bench "cereal"        (whnf perfEncodeCereal       tstdata)
+          -- , bench "aeson generic" (whnf perfEncodeAesonGeneric tstdata)
+          -- , bench "aeson TH"      (whnf perfEncodeAesonTH      tstdata)
           , bench "read/show"     (whnf perfEncodeReadShow     tstdata)
     --      , bench "msgpack lib"   (whnf perfEncodeMsgpack      tstdata)
     --      , bench "new msgpack"   (whnf perfEncodeNewMsgPack   tstdata)
-          , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
+          -- , bench "cbor"          (whnf perfEncodeCBOR         tstdata)
+          , bench "packman"       (whnf perfEncodePackman      tstdata)
           ]
       , bgroup "decoding" $ deepseq (tstdataB, tstdataC, tstdataA, tstdataS,
                                       tstdataR)
           [ bench "binary"        (whnf perfDecodeBinary       tstdataB)
-          , bench "cereal"        (whnf perfDecodeCereal       tstdataC)
-          , bench "aeson generic" (whnf perfDecodeAesonGeneric tstdataA)
-          , bench "aeson TH"      (whnf perfDecodeAesonTH      tstdataA)
+          -- , bench "cereal"        (whnf perfDecodeCereal       tstdataC)
+          -- , bench "aeson generic" (whnf perfDecodeAesonGeneric tstdataA)
+          -- , bench "aeson TH"      (whnf perfDecodeAesonTH      tstdataA)
           , bench "read/show"     (whnf perfDecodeReadShow     tstdataS)
     --      , bench "msgpack lib"   (whnf perfDecodeMsgpack      tstdataM)
     --      , bench "new msgpack"   (whnf perfDecodeNewMsgPack   tstdataN)
-          , bench "cbor"          (whnf perfDecodeCBOR         tstdataR)
+          -- , bench "cbor"          (whnf perfDecodeCBOR         tstdataR)
+          , bench "packman"       (whnf perfDecodePackman      tstdataP)
           ]
       , bgroup "decoding + deepseq" $ deepseq (tstdataB, tstdataC, tstdataA, 
-                                               tstdataS, tstdataR)
+                                               tstdataS, tstdataR, tstdataP)
           [ bench "binary"        (nf perfDecodeBinary       tstdataB)
-          , bench "cereal"        (nf perfDecodeCereal       tstdataC)
-          , bench "aeson generic" (nf perfDecodeAesonGeneric tstdataA)
-          , bench "aeson TH"      (nf perfDecodeAesonTH      tstdataA)
+          -- , bench "cereal"        (nf perfDecodeCereal       tstdataC)
+          -- , bench "aeson generic" (nf perfDecodeAesonGeneric tstdataA)
+          -- , bench "aeson TH"      (nf perfDecodeAesonTH      tstdataA)
           , bench "read/show"     (nf perfDecodeReadShow     tstdataS)
     --      , bench "msgpack lib"   (nf perfDecodeMsgpack      tstdataM)
     --      , bench "new msgpack"   (nf perfDecodeNewMsgPack   tstdataN)
-          , bench "cbor"          (nf perfDecodeCBOR         tstdataR)
+          -- , bench "cbor"          (nf perfDecodeCBOR         tstdataR)
+          , bench "packman"       (nf perfDecodePackman      tstdataP)
           ]
       ]
   where
@@ -278,6 +293,7 @@ microbenchmarks = do
     --perfEncodeMsgpack      = BS.length . Micro.PkgMsgpack.serialise
     --perfEncodeNewMsgPack   = BS.length . Micro.NewMsgpack.serialise
     perfEncodeCBOR         = BS.length . Micro.CBOR.serialise
+    perfEncodePackman      = BS.length . Micro.Packman.serialise
 
     perfDecodeBinary       = Micro.PkgBinary.deserialise
     perfDecodeCereal       = Micro.PkgCereal.deserialise
@@ -287,6 +303,7 @@ microbenchmarks = do
     --perfDecodeMsgpack      = PkgMsgpack.deserialise
     --perfDecodeNewMsgPack   = Micro.NewMsgpack.deserialise
     perfDecodeCBOR         = Micro.CBOR.deserialise
+    perfDecodePackman      = Micro.Packman.deserialise
 
 time :: Show a => IO a -> IO ()
 time action = do

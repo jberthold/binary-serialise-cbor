@@ -94,6 +94,7 @@ benchmark vs-other-libs
                      Real.PkgCereal,
                      --Real.PkgMsgpack,
                      Real.CBOR,
+                     Real.Packman,
 
                      Tree.Types,
                      Tree.Load,
@@ -105,7 +106,8 @@ benchmark vs-other-libs
                      Tree.PkgBinary,
                      Tree.PkgCereal,
                      --Tree.PkgMsgpack,
-                     Tree.CBOR
+                     Tree.CBOR,
+                     Tree.Packman
 
   build-depends:     base, ghc-prim,
                      text, bytestring, deepseq,
@@ -121,6 +123,7 @@ benchmark vs-other-libs
                      zlib >=0.5,
                      pretty,
                      time >=1.4,
+                     packman == 0.2,
                      criterion
   if flag(newtime15)
     build-depends:   time >= 1.5
